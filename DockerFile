@@ -1,0 +1,16 @@
+# 使用基础镜像
+FROM elasticsearch:8.11.4
+
+# 配置x-pack
+RUN echo '# enable x-pack' >> /usr/share/elasticsearch/config/elasticsearch.yml \
+    && echo 'xpack.security.enabled: true' >> /usr/share/elasticsearch/config/elasticsearch.yml \
+    && echo 'xpack.security.audit.enabled: true' >> /usr/share/elasticsearch/config/elasticsearch.yml
+
+# 安装分析插件
+RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install -b https://github.com/infinilabs/analysis-ik/releases/download/v8.11.4/elasticsearch-analysis-ik-8.11.4.zip
+
+# 替换JAR文件（请确保你有合法的替换文件，并且路径正确）
+COPY ./x-pack-core-8.11.4.jar /usr/share/elasticsearch/modules/x-pack-core/x-pack-core-8.11.4.jar
+
+# 设置必要的权限和其他配置
+RUN chown elasticsearch:elasticsearch /usr/share/elasticsearch/modules/x-pack-core/x-pack-core-8.11.4.jar
